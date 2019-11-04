@@ -41,6 +41,42 @@ namespace Bing.BluetoothPrinter.Zicox.Extensions
         }
 
         /// <summary>
+        /// 打印二维码
+        /// </summary>
+        /// <param name="client">客户端</param>
+        /// <param name="x">二维码起始x坐标</param>
+        /// <param name="y">二维码起始y坐标</param>
+        /// <param name="text">二维码内容</param>
+        /// <param name="size">尺寸</param>
+        /// <param name="level">二维码纠错级别</param>
+        /// <param name="rotate">旋转角度</param>
+        public static ZicoxPrintClient DrawQrCode(this ZicoxPrintClient client, int x, int y, string text,
+            int size, int level, int rotate)
+        {
+            client.DrawQrCode(x, y, text, size, GetErrorLevel(level), rotate);
+            return client;
+        }
+
+        /// <summary>
+        /// 获取二维码纠错级别
+        /// </summary>
+        /// <param name="level">级别</param>
+        private static string GetErrorLevel(int level)
+        {
+            switch (level)
+            {
+                case 0:
+                    return "L";
+                case 1:
+                    return "M";
+                case 2:
+                    return "Q";
+                default:
+                    return "H";
+            }
+        }
+
+        /// <summary>
         /// 绘制虚线
         /// </summary>
         /// <param name="client">客户端</param>
@@ -50,7 +86,6 @@ namespace Bing.BluetoothPrinter.Zicox.Extensions
         /// <param name="y1">虚线结束y坐标</param>
         public static ZicoxPrintClient DrawDashLine(this ZicoxPrintClient client, int x0, int y0, int x1, int y1)
         {
-            var sb = new StringBuilder();
             for (int i = 0; i < x1; i= ((i + 16) - 1)+1)
                 client.DrawText(x0 + i, y0 - 10, "-", 24, 0, 0, false, false, false);
             return client;
@@ -83,6 +118,22 @@ namespace Bing.BluetoothPrinter.Zicox.Extensions
         {
             client.DrawBox(x0, y0, x1, y1, lineWidth);
             return client;
+        }
+
+        /// <summary>
+        /// 画文字
+        /// </summary>
+        /// <param name="client">客户端</param>
+        /// <param name="startX">文字起始x坐标</param>
+        /// <param name="startY">文字起始y坐标</param>
+        /// <param name="text">内容</param>
+        /// <param name="fontSize">字体大小</param>
+        /// <param name="style">样式</param>
+        /// <param name="rotate">旋转角度</param>
+        public static ZicoxPrintClient DrawText(this ZicoxPrintClient client, int startX, int startY, string text,
+            int fontSize, int style, int rotate)
+        {
+
         }
 
         

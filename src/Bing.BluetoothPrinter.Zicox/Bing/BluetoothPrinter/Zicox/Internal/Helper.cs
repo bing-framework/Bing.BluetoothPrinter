@@ -67,6 +67,28 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         }
 
         /// <summary>
+        /// 转换样式
+        /// </summary>
+        /// <param name="style">样式</param>
+        public static (bool bold, bool underline) ConvertStyle(int style)
+        {
+            switch (style)
+            {
+                case 1:
+                case 3:
+                    return (true, false);
+                case 4:
+                case 6:
+                    return (false, true);
+                case 5:
+                case 7:
+                    return (true, true);
+                default:
+                    return (false, false);
+            }
+        }
+
+        /// <summary>
         /// 获取条码旋转命令
         /// </summary>
         /// <param name="rotate">旋转角度</param>
@@ -108,16 +130,18 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         /// <returns></returns>
         public static (int x, int y) GetBarcodeCoordinate(int rotate, int x, int y, int width, int height)
         {
-            if (rotate == 180)
+            switch (rotate)
             {
-                x -= width;
-                y -= height;
+                case 180:
+                    x -= width;
+                    y -= height;
+                    break;
+                case 270:
+                    x -= height;
+                    y += width;
+                    break;
             }
-            else if (rotate == 270)
-            {
-                x -= height;
-                y += width;
-            }
+
             return (x, y);
         }
     }
