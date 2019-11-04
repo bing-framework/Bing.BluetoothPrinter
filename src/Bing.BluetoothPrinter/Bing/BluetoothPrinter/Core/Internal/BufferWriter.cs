@@ -12,7 +12,7 @@ namespace Bing.BluetoothPrinter.Core.Internal
         /// <summary>
         /// 流缓冲区
         /// </summary>
-        private List<byte> _buffer;
+        private readonly List<byte> _buffer;
 
         /// <summary>
         /// 字符编码

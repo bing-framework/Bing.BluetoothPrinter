@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Bing\BluetoothPrinter\Zicox\Core\" />
+    <ProjectReference Include="..\Bing.BluetoothPrinter\Bing.BluetoothPrinter.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bing.BluetoothPrinter\Bing.BluetoothPrinter.csproj" />
+    <Folder Include="Bing\BluetoothPrinter\Zicox\Core\" />
   </ItemGroup>
 
 </Project>

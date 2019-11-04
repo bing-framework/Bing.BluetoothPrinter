@@ -1,7 +1,7 @@
-﻿namespace Bing.BluetoothPrinter.Zicox.Internal
+﻿namespace Bing.BluetoothPrinter.Zicox.Metadata
 {
     /// <summary>
-    /// 画文字明细
+    /// 文字明细
     /// </summary>
     internal class DrawTextItem
     {
@@ -21,7 +21,7 @@
         public int FontZoom { get; set; }
 
         /// <summary>
-        /// 是否颠倒
+        /// 是否反显
         /// </summary>
         public bool Reverse { get; set; }
 

@@ -1,9 +1,9 @@
-﻿namespace Bing.BluetoothPrinter.Zicox.Internal
+﻿namespace Bing.BluetoothPrinter.Zicox.Metadata
 {
     /// <summary>
-    /// 打印条码明细
+    /// 一维条码明细
     /// </summary>
-    internal class DrawBarcodeItem
+    internal class DrawBarcode1DItem
     {
         /// <summary>
         /// 高度
@@ -11,9 +11,14 @@
         public int Height { get; set; }
 
         /// <summary>
-        /// 线条宽度
+        /// 窄条的单位宽度
         /// </summary>
         public int LineWidth { get; set; }
+
+        /// <summary>
+        /// 宽条与窄条的比率
+        /// </summary>
+        public int Ratio { get; set; } = 1;
 
         /// <summary>
         /// 旋转角度
