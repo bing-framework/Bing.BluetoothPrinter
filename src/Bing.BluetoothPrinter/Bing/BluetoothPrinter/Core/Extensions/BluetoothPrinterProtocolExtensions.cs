@@ -80,6 +80,57 @@ namespace Bing.BluetoothPrinter.Core.Extensions
             int leftTopY, int rightBottomX, int rightBottomY) =>
             protocol.DrawRect(leftTopX, leftTopY, rightBottomX, rightBottomY, 1, LineStyle.Dotted);
 
+        /// <summary>
+        /// 画文字
+        /// </summary>
+        /// <param name="protocol">协议</param>
+        /// <param name="startX">文字起始x坐标</param>
+        /// <param name="startY">文字起始y坐标</param>
+        /// <param name="width">文字绘制区域宽度(可以为0，不为0的时候文字需要根据宽度自动换行)</param>
+        /// <param name="height">文字绘制区域高度(可以为0)</param>
+        /// <param name="text">内容</param>
+        public static IBluetoothPrinterProtocol DrawText(this IBluetoothPrinterProtocol protocol, int startX,
+            int startY, int width, int height, string text) =>
+            protocol.DrawText(startX, startY, width, height, text, FontSize.Size16, TextStyle.None,
+                PrintColor.Black, RotationAngle.None);
 
+        /// <summary>
+        /// 画文字
+        /// </summary>
+        /// <param name="protocol">协议</param>
+        /// <param name="startX">文字起始x坐标</param>
+        /// <param name="startY">文字起始y坐标</param>
+        /// <param name="text">内容</param>
+        public static IBluetoothPrinterProtocol DrawText(this IBluetoothPrinterProtocol protocol, int startX,
+            int startY, string text) =>
+            protocol.DrawText(startX, startY, 0, 0, text, FontSize.Size16, TextStyle.None,
+                PrintColor.Black, RotationAngle.None);
+
+        /// <summary>
+        /// 画文字
+        /// </summary>
+        /// <param name="protocol">协议</param>
+        /// <param name="startX">文字起始x坐标</param>
+        /// <param name="startY">文字起始y坐标</param>
+        /// <param name="text">内容</param>
+        /// <param name="fontSize">字体大小</param>
+        /// <param name="textStyle">字体样式</param>
+        public static IBluetoothPrinterProtocol DrawText(this IBluetoothPrinterProtocol protocol, int startX,
+            int startY, string text, FontSize fontSize, TextStyle textStyle) =>
+            protocol.DrawText(startX, startY, 0, 0, text, fontSize, textStyle,
+                PrintColor.Black, RotationAngle.None);
+
+        /// <summary>
+        /// 画文字
+        /// </summary>
+        /// <param name="protocol">协议</param>
+        /// <param name="startX">文字起始x坐标</param>
+        /// <param name="startY">文字起始y坐标</param>
+        /// <param name="text">内容</param>
+        /// <param name="fontSize">字体大小</param>
+        public static IBluetoothPrinterProtocol DrawText(this IBluetoothPrinterProtocol protocol, int startX,
+            int startY, string text, FontSize fontSize) =>
+            protocol.DrawText(startX, startY, 0, 0, text, fontSize, TextStyle.None,
+                PrintColor.Black, RotationAngle.None);
     }
 }

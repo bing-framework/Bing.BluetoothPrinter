@@ -86,33 +86,17 @@
         /// </summary>
         Size16 = 16,
         /// <summary>
-        /// 20号字体
-        /// </summary>
-        Size20 = 20,
-        /// <summary>
         /// 24号字体
         /// </summary>
         Size24 = 24,
-        /// <summary>
-        /// 28号字体
-        /// </summary>
-        Size28 = 28,
         /// <summary>
         /// 32号字体
         /// </summary>
         Size32 = 32,
         /// <summary>
-        /// 40号字体
-        /// </summary>
-        Size40 = 40,
-        /// <summary>
         /// 48号字体
         /// </summary>
         Size48 = 48,
-        /// <summary>
-        /// 56号字体
-        /// </summary>
-        Size56 = 56,
         /// <summary>
         /// 64号字体
         /// </summary>
@@ -122,17 +106,117 @@
         /// </summary>
         Size72 = 72,
         /// <summary>
-        /// 84号字体
+        /// 80号字体
         /// </summary>
-        Size84 = 84,
+        Size80 = 80,
         /// <summary>
         /// 96号字体
         /// </summary>
         Size96 = 96,
         /// <summary>
+        /// 112号字体
+        /// </summary>
+        Size112 = 112,
+        /// <summary>
+        /// 120号字体
+        /// </summary>
+        Size120 = 120,
+        /// <summary>
         /// 128号字体
         /// </summary>
         Size128 = 128,
+        /// <summary>
+        /// 144号字体
+        /// </summary>
+        Size144 = 144,
+        /// <summary>
+        /// 160号字体
+        /// </summary>
+        Size160 = 160,
+        /// <summary>
+        /// 168号字体
+        /// </summary>
+        Size168 = 168,
+        /// <summary>
+        /// 176号字体
+        /// </summary>
+        Size176 = 176,
+        /// <summary>
+        /// 192号字体
+        /// </summary>
+        Size192 = 192,
+        /// <summary>
+        /// 208号字体
+        /// </summary>
+        Size208 = 208,
+        /// <summary>
+        /// 216号字体
+        /// </summary>
+        Size216 = 216,
+        /// <summary>
+        /// 224号字体
+        /// </summary>
+        Size224 = 224,
+        /// <summary>
+        /// 240号字体
+        /// </summary>
+        Size240 = 240,
+        /// <summary>
+        /// 256号字体
+        /// </summary>
+        Size256 = 256,
+        /// <summary>
+        /// 264号字体
+        /// </summary>
+        Size264 = 264,
+        /// <summary>
+        /// 272号字体
+        /// </summary>
+        Size272 = 272,
+        /// <summary>
+        /// 288号字体
+        /// </summary>
+        Size288 = 288,
+        /// <summary>
+        /// 304号字体
+        /// </summary>
+        Size304 = 304,
+        /// <summary>
+        /// 312号字体
+        /// </summary>
+        Size312 = 312,
+        /// <summary>
+        /// 320号字体
+        /// </summary>
+        Size320 = 320,
+        /// <summary>
+        /// 336号字体
+        /// </summary>
+        Size336 = 336,
+        /// <summary>
+        /// 352号字体
+        /// </summary>
+        Size352 = 352,
+        /// <summary>
+        /// 360号字体
+        /// </summary>
+        Size360 = 360,
+        /// <summary>
+        /// 368号字体
+        /// </summary>
+        Size368 = 368,
+        /// <summary>
+        /// 384号字体
+        /// </summary>
+        Size384 = 384,
+        /// <summary>
+        /// 400号字体
+        /// </summary>
+        Size400 = 400,
+        /// <summary>
+        /// 408号字体
+        /// </summary>
+        Size408 = 408,
     }
 
     /// <summary>

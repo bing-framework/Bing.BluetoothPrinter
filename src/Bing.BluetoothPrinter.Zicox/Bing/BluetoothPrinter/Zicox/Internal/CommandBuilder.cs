@@ -24,7 +24,7 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         }
 
         /// <summary>
-        /// 绘制线条
+        /// 画文本
         /// </summary>
         /// <param name="pageWidth">页宽度</param>
         /// <param name="pageHeight">页高度</param>
