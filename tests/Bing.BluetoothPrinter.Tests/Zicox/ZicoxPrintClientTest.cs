@@ -27,7 +27,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_DrawText()
         {
-            Client.Create(400, 240)
+            Client.SetPage(400, 240)
                 .DrawText(0, 0, "隔壁老王的战斗 with lao wang de zhan dou", 16, 1, 0, false, false, false);
             var result = Client.Build().ToHex();
             Output.WriteLine(result);
@@ -39,7 +39,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_DrawLine()
         {
-            Client.Create(200, 210)
+            Client.SetPage(200, 210)
                 .DrawLine(0, 0, 200, 0, 1)
                 .DrawLine(0, 0, 200, 200, 2)
                 .DrawLine(0, 0, 0, 200, 3);
@@ -53,7 +53,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_DrawBox()
         {
-            Client.Create(400, 210)
+            Client.SetPage(400, 210)
                 .DrawBox(0, 0, 200, 200, 1)
                 .DrawBox(200, 0, 400, 200, 1);
             var result = Client.Build().ToHex();
@@ -66,7 +66,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_DrawBarcode()
         {
-            Client.Create(400, 210)
+            Client.SetPage(400, 210)
                 .DrawBarcode1D("128", 150, 10, "HORIZ.", 1, 50, 0, 1)
                 .DrawText(210,60,"HORIZ.",16,0,0,false,false,false)
                 .DrawBarcode1D("128", 10, 200, "VERT.", 1, 50, 90, 1)
@@ -81,7 +81,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_DrawQrCode()
         {
-            Client.Create(400, 500)
+            Client.SetPage(400, 500)
                 .DrawQrCode(10, 100, "ABC123", 10, "M", 0);
             var result = Client.Build().ToHex();
             Output.WriteLine(result);
@@ -93,7 +93,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_DrawDashLine()
         {
-            Client.Create(400, 500)
+            Client.SetPage(400, 500)
                 .DrawDashLine(0, 0,400, 0);
             var result = Client.Build().ToHex();
             Output.WriteLine(result);

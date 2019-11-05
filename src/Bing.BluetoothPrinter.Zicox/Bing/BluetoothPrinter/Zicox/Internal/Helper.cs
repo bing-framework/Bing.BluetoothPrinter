@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using Bing.BluetoothPrinter.Zicox.Metadata;
 
 namespace Bing.BluetoothPrinter.Zicox.Internal
@@ -123,11 +124,10 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         /// 获取条码起始坐标
         /// </summary>
         /// <param name="rotate">旋转角度</param>
-        /// <param name="x">X轴起始坐标</param>
-        /// <param name="y"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <returns></returns>
+        /// <param name="x">x轴起始坐标</param>
+        /// <param name="y">y轴起始坐标</param>
+        /// <param name="width">宽度</param>
+        /// <param name="height">高度</param>
         public static (int x, int y) GetBarcodeCoordinate(int rotate, int x, int y, int width, int height)
         {
             switch (rotate)
@@ -141,8 +141,74 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
                     y += width;
                     break;
             }
-
             return (x, y);
+        }
+
+        /// <summary>
+        /// 转换二维码纠错级别
+        /// </summary>
+        /// <param name="level">二维码纠错级别</param>
+        public static string ConvertErrorLevel(int level)
+        {
+            switch (level)
+            {
+                case 0:
+                    return "L";
+                case 1:
+                    return "M";
+                case 2:
+                    return "Q";
+                default:
+                    return "H";
+            }
+        }
+
+        /// <summary>
+        /// 是否中文字符串
+        /// </summary>
+        /// <param name="value">值</param>
+        public static bool IsChinese(char value) => Regex.IsMatch(value.ToString(), "^[一-龥]$");
+
+        /// <summary>
+        /// 转换条码类型
+        /// </summary>
+        /// <param name="type">条码类型</param>
+        public static string ConvertBarcodeType(BarcodeType type)
+        {
+            switch (type)
+            {
+                case BarcodeType.Code128:
+                    return "128";
+                case BarcodeType.Code39:
+                    return "39";
+                case BarcodeType.Code93:
+                    return "93";
+                case BarcodeType.Codabar:
+                    return "CODABAR";
+                case BarcodeType.Ean8:
+                    return "EAN8";
+                case BarcodeType.Ean13:
+                    return "EAN13";
+                case BarcodeType.UpcA:
+                    return "UPCA";
+                case BarcodeType.UpcE:
+                    return "UPCE";
+                case BarcodeType.I2OF5:
+                    return "I2OF5";
+                case BarcodeType.I2OF5C:
+                    return "I2OF5C";
+                case BarcodeType.I2OF5G:
+                    return "I20F5G";
+                case BarcodeType.UccEan128:
+                    return "UCCEAN128";
+                case BarcodeType.Msi:
+                    return "MSI";
+                case BarcodeType.Postnet:
+                    return "POSTNET";
+                case BarcodeType.Fim:
+                    return "FIM";
+            }
+            throw new NotImplementedException($"未实现条码类型 {type.ToString()} ");
         }
     }
 }

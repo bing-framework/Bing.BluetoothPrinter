@@ -187,6 +187,7 @@
         /// EAN-13
         /// </summary>
         Ean13 = 5,
+
         /// <summary>
         /// UPC-A
         /// </summary>
@@ -196,9 +197,36 @@
         /// </summary>
         UpcE = 7,
         /// <summary>
-        /// I2Of5
+        /// I2OF5
         /// </summary>
-        I2Of5 = 8,
+        // ReSharper disable once InconsistentNaming
+        I2OF5 = 8,
+        /// <summary>
+        /// I2OF5C
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        I2OF5C = 9,
+        /// <summary>
+        /// I2OF5G
+        /// </summary>
+        // ReSharper disable once InconsistentNaming
+        I2OF5G = 10,
+        /// <summary>
+        /// UCCEAN128
+        /// </summary>
+        UccEan128 = 11,
+        /// <summary>
+        /// MSI
+        /// </summary>
+        Msi = 12,
+        /// <summary>
+        /// POSTNET
+        /// </summary>
+        Postnet = 13,
+        /// <summary>
+        /// FIM
+        /// </summary>
+        Fim = 14
     }
 
     /// <summary>

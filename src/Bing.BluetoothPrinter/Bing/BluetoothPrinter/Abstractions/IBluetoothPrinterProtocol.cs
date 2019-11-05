@@ -9,6 +9,16 @@ namespace Bing.BluetoothPrinter.Abstractions
     public interface IBluetoothPrinterProtocol
     {
         /// <summary>
+        /// 页宽
+        /// </summary>
+        int Width { get; }
+
+        /// <summary>
+        /// 页高
+        /// </summary>
+        int Height { get; }
+
+        /// <summary>
         /// 设置打印纸张大小、旋转角度
         /// </summary>
         /// <param name="width">宽度。单位：像素(Pixcls)</param>
@@ -23,7 +33,7 @@ namespace Bing.BluetoothPrinter.Abstractions
         /// <param name="startY">线条起始点y坐标</param>
         /// <param name="endX">线条结束点x坐标</param>
         /// <param name="endY">线条结束点y坐标</param>
-        /// <param name="lineWidth">线条宽度</param>
+        /// <param name="lineWidth">线宽</param>
         /// <param name="lineStyle">线条样式</param>
         IBluetoothPrinterProtocol DrawLine(int startX, int startY, int endX, int endY, int lineWidth, LineStyle lineStyle);
 
@@ -130,18 +140,26 @@ namespace Bing.BluetoothPrinter.Abstractions
         IBluetoothPrinterProtocol DrawImage(int startX, int startY, Bitmap bitmap, int width, int height);
 
         /// <summary>
-        /// 下一个标签
+        /// 追加
         /// </summary>
-        IBluetoothPrinterProtocol FeedToNextLabel();
+        /// <param name="value">值</param>
+        IBluetoothPrinterProtocol Append(byte[] value);
 
         /// <summary>
-        /// 打印
+        /// 追加
         /// </summary>
-        void Print();
+        /// <param name="value">值</param>
+        IBluetoothPrinterProtocol Append(string value);
 
         /// <summary>
-        /// 打印并进纸
+        /// 追加并换行
         /// </summary>
-        void PrintAndFeed();
+        /// <param name="value">值</param>
+        IBluetoothPrinterProtocol AppendLine(string value);
+
+        /// <summary>
+        /// 构建
+        /// </summary>
+        IBufferWriter Build();
     }
 }

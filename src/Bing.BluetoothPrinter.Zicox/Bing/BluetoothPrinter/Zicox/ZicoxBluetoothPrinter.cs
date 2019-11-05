@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
+using Bing.BluetoothPrinter.Zicox.Extensions;
+using Bing.BluetoothPrinter.Zicox.Internal;
 
 namespace Bing.BluetoothPrinter.Zicox
 {
@@ -10,9 +13,32 @@ namespace Bing.BluetoothPrinter.Zicox
     public class ZicoxBluetoothPrinter : IBluetoothPrinterProtocol
     {
         /// <summary>
+        /// 初始化一个<see cref="ZicoxBluetoothPrinter"/>类型的实例
+        /// </summary>
+        public ZicoxBluetoothPrinter() : this(Encoding.GetEncoding("gbk"))
+        {
+        }
+
+        /// <summary>
+        /// 初始化一个<see cref="ZicoxBluetoothPrinter"/>类型的实例
+        /// </summary>
+        /// <param name="encoding">字符编码</param>
+        public ZicoxBluetoothPrinter(Encoding encoding) => Client = new ZicoxPrintClient(encoding);
+
+        /// <summary>
         /// 芝柯打印客户端
         /// </summary>
         internal ZicoxPrintClient Client { get; private set; }
+
+        /// <summary>
+        /// 页宽
+        /// </summary>
+        public int Width { get; private set; }
+
+        /// <summary>
+        /// 页高
+        /// </summary>
+        public int Height { get; private set; }
 
         /// <summary>
         /// 设置打印纸张大小、旋转角度
@@ -22,7 +48,10 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="orientation">打印方向</param>
         public IBluetoothPrinterProtocol SetPage(int width, int height, PrintOrientation orientation)
         {
-            throw new NotImplementedException();
+            Width = width;
+            Height = height;
+            Client.SetPage(width, height, (int) orientation);
+            return this;
         }
 
         /// <summary>
@@ -32,11 +61,20 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="startY">线条起始点y坐标</param>
         /// <param name="endX">线条结束点x坐标</param>
         /// <param name="endY">线条结束点y坐标</param>
-        /// <param name="lineWidth">线条宽度</param>
+        /// <param name="lineWidth">线宽</param>
         /// <param name="lineStyle">线条样式</param>
         public IBluetoothPrinterProtocol DrawLine(int startX, int startY, int endX, int endY, int lineWidth, LineStyle lineStyle)
         {
-            throw new NotImplementedException();
+            switch (lineStyle)
+            {
+                case LineStyle.Full:
+                    Client.DrawLine(startX, startY, endX, endY, lineWidth);
+                    break;
+                case LineStyle.Dotted:
+                    Client.DrawDashLine(startX, startY, endX, endY);
+                    break;
+            }
+            return this;
         }
 
         /// <summary>
@@ -51,7 +89,16 @@ namespace Bing.BluetoothPrinter.Zicox
         public IBluetoothPrinterProtocol DrawRect(int leftTopX, int leftTopY, int rightBottomX, int rightBottomY, int lineWidth,
             LineStyle lineStyle)
         {
-            throw new NotImplementedException();
+            switch (lineStyle)
+            {
+                case LineStyle.Full:
+                    Client.DrawRectFill(leftTopX, leftTopY, rightBottomX, rightBottomY);
+                    break;
+                case LineStyle.Dotted:
+                    Client.DrawRect(leftTopX, leftTopY, rightBottomX, rightBottomY, lineWidth);
+                    break;
+            }
+            return this;
         }
 
         /// <summary>
@@ -69,7 +116,40 @@ namespace Bing.BluetoothPrinter.Zicox
         public IBluetoothPrinterProtocol DrawText(int startX, int startY, int width, int height, string text, int fontSize,
             int textStyle, int color, int rotation)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(text))
+                return this;
+            // 不换行
+            if (width == 0 || height == 0)
+            {
+                Client.DrawText(startX, startY, text, fontSize, textStyle, rotation);
+                return this;
+            }
+            // 换行
+            var widthTmp = 0;
+            var startYTmp = startY;
+            var textTmp = "";
+            foreach (var c in text.ToCharArray())
+            {
+                if (Helper.IsChinese(c))
+                    widthTmp = widthTmp + fontSize;
+                else
+                    widthTmp = widthTmp + fontSize / 2;
+                if (widthTmp >= width)
+                {
+                    textTmp += c;
+                    Client.DrawText(startX, startYTmp, textTmp, fontSize, textStyle, rotation);
+                    widthTmp = 0;
+                    startYTmp += fontSize + 2;
+                    textTmp = "";
+                }
+                else
+                {
+                    textTmp += c;
+                }
+            }
+            if(!string.IsNullOrEmpty(textTmp))
+                Client.DrawText(startX, startYTmp, textTmp, fontSize, textStyle, rotation);
+            return this;
         }
 
         /// <summary>
@@ -87,7 +167,8 @@ namespace Bing.BluetoothPrinter.Zicox
         public IBluetoothPrinterProtocol DrawText(int startX, int startY, int width, int height, string text, FontSize fontSize,
             TextStyle textStyle, PrintColor color, RotationAngle rotation)
         {
-            throw new NotImplementedException();
+            return DrawText(startX, startY, width, height, text, (int) fontSize, (int) textStyle, (int) color,
+                (int) rotation);
         }
 
         /// <summary>
@@ -103,7 +184,10 @@ namespace Bing.BluetoothPrinter.Zicox
         public IBluetoothPrinterProtocol DrawBarcode(int startX, int startY, int height, int lineWidth, string text, int type,
             int rotation)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrWhiteSpace(text))
+                Client.DrawBarcode1D(Helper.ConvertBarcodeType((BarcodeType) type), startX, startY, text, lineWidth,
+                    height, rotation, 1);
+            return this;
         }
 
         /// <summary>
@@ -119,7 +203,10 @@ namespace Bing.BluetoothPrinter.Zicox
         public IBluetoothPrinterProtocol DrawBarcode(int startX, int startY, int height, int lineWidth, string text, BarcodeType type,
             RotationAngle rotation)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrWhiteSpace(text))
+                Client.DrawBarcode1D(Helper.ConvertBarcodeType((BarcodeType) type), startX, startY, text, lineWidth,
+                    height, (int) rotation, 1);
+            return this;
         }
 
         /// <summary>
@@ -133,7 +220,9 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="rotation">旋转角度</param>
         public IBluetoothPrinterProtocol DrawQrCode(int startX, int startY, string text, int unitWidth, int level, int rotation)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrWhiteSpace(text))
+                Client.DrawQrCode(startX, startY, text, unitWidth, level, rotation);
+            return this;
         }
 
         /// <summary>
@@ -148,7 +237,9 @@ namespace Bing.BluetoothPrinter.Zicox
         public IBluetoothPrinterProtocol DrawQrCode(int startX, int startY, string text, QrCodeUnitSize unitWidth,
             QrCodeCorrectionLevel level, RotationAngle rotation)
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrWhiteSpace(text))
+                Client.DrawQrCode(startX, startY, text, (int) unitWidth, (int) level, (int) rotation);
+            return this;
         }
 
         /// <summary>
@@ -165,27 +256,38 @@ namespace Bing.BluetoothPrinter.Zicox
         }
 
         /// <summary>
-        /// 下一个标签
+        /// 追加
         /// </summary>
-        public IBluetoothPrinterProtocol FeedToNextLabel()
+        /// <param name="value">值</param>
+        public IBluetoothPrinterProtocol Append(byte[] value)
         {
-            throw new NotImplementedException();
+            Client.Append(value);
+            return this;
         }
 
         /// <summary>
-        /// 打印
+        /// 追加
         /// </summary>
-        public void Print()
+        /// <param name="value">值</param>
+        public IBluetoothPrinterProtocol Append(string value)
         {
-            throw new NotImplementedException();
+            Client.Append(value);
+            return this;
         }
 
         /// <summary>
-        /// 打印并进纸
+        /// 追加并换行
         /// </summary>
-        public void PrintAndFeed()
+        /// <param name="value">值</param>
+        public IBluetoothPrinterProtocol AppendLine(string value)
         {
-            throw new NotImplementedException();
+            Client.AppendLine(value);
+            return this;
         }
+
+        /// <summary>
+        /// 构建
+        /// </summary>
+        public IBufferWriter Build() => Client.Build();
     }
 }

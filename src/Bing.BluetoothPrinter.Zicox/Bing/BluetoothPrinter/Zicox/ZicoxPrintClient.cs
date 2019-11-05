@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
 using Bing.BluetoothPrinter.Core;
 using Bing.BluetoothPrinter.Core.Extensions;
@@ -27,6 +28,11 @@ namespace Bing.BluetoothPrinter.Zicox
         /// 高度
         /// </summary>
         public int Height { get; internal set; }
+
+        /// <summary>
+        /// 纸张旋转角度
+        /// </summary>
+        public int PagerRotate { get; internal set; }
 
         /// <summary>
         /// 条码列表
@@ -64,6 +70,11 @@ namespace Bing.BluetoothPrinter.Zicox
         internal IBufferWriter Writer { get; private set; }
 
         /// <summary>
+        /// 原始缓冲区写入器
+        /// </summary>
+        internal IBufferWriter RawWriter { get; private set; }
+
+        /// <summary>
         /// 命令构建器
         /// </summary>
         internal CommandBuilder CommandBuilder { get; private set; }
@@ -74,6 +85,18 @@ namespace Bing.BluetoothPrinter.Zicox
         public ZicoxPrintClient()
         {
             Writer = BufferWriterFactory.CreateDefaultWriter();
+            RawWriter = BufferWriterFactory.CreateDefaultWriter();
+            CommandBuilder = new CommandBuilder(Writer);
+        }
+
+        /// <summary>
+        /// 初始化一个<see cref="ZicoxPrintClient"/>类型的实例
+        /// </summary>
+        /// <param name="encoding">字符编码</param>
+        public ZicoxPrintClient(Encoding encoding)
+        {
+            Writer = BufferWriterFactory.CreateDefaultWriter(encoding);
+            RawWriter = BufferWriterFactory.CreateDefaultWriter(encoding);
             CommandBuilder = new CommandBuilder(Writer);
         }
 
@@ -82,7 +105,7 @@ namespace Bing.BluetoothPrinter.Zicox
         /// </summary>
         /// <param name="width">宽度</param>
         /// <param name="height">高度</param>
-        public ZicoxPrintClient Create(int width, int height)
+        internal ZicoxPrintClient Create(int width, int height)
         {
             this.Width = width;
             this.Height = height;
@@ -92,36 +115,6 @@ namespace Bing.BluetoothPrinter.Zicox
             this.BoxList.Clear();
             this.LineList.Clear();
             this.TextList.Clear();
-            return this;
-        }
-
-        /// <summary>
-        /// 追加
-        /// </summary>
-        /// <param name="value">值</param>
-        public ZicoxPrintClient Append(byte[] value)
-        {
-            Writer.Write(value);
-            return this;
-        }
-
-        /// <summary>
-        /// 追加
-        /// </summary>
-        /// <param name="value">值</param>
-        public ZicoxPrintClient Append(string value)
-        {
-            Writer.Write(value);
-            return this;
-        }
-
-        /// <summary>
-        /// 追加并换行
-        /// </summary>
-        /// <param name="value">值</param>
-        public ZicoxPrintClient AppendLine(string value)
-        {
-            Writer.WriteLine(value);
             return this;
         }
 
@@ -351,6 +344,7 @@ namespace Bing.BluetoothPrinter.Zicox
             BuildBarcode(Width, Height);
             BuildQrCode(Width, Height);
             BuildBitmap(Width, Height);
+            Writer.Write(RawWriter.GetBytes());
             Writer.WriteLine("PRINT");
             return Writer;
         }

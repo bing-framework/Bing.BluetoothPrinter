@@ -1,5 +1,4 @@
-﻿using System;
-using Bing.BluetoothPrinter.Abstractions;
+﻿using Bing.BluetoothPrinter.Abstractions;
 
 namespace Bing.BluetoothPrinter.Zicox
 {
@@ -11,9 +10,6 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <summary>
         /// 创建蓝牙打印机协议
         /// </summary>
-        public IBluetoothPrinterProtocol Create()
-        {
-            throw new NotImplementedException();
-        }
+        public IBluetoothPrinterProtocol Create() => new ZicoxBluetoothPrinter();
     }
 }
