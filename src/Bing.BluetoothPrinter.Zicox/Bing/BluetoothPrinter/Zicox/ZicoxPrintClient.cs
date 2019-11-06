@@ -115,6 +115,9 @@ namespace Bing.BluetoothPrinter.Zicox
             this.BoxList.Clear();
             this.LineList.Clear();
             this.TextList.Clear();
+            this.RawWriter.Clear();
+            this.Writer.Clear();
+            this.CommandBuilder.Writer.Clear();
             return this;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
 using Bing.BluetoothPrinter.Core.Extensions;
 using Bing.BluetoothPrinter.Zicox;
@@ -179,53 +180,180 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         {
             Output.WriteLine(BuildPriceLabel("美国阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
                 null,
-                80.00m,
+                800.00m,
                 "200g",
                 "盒",
                 "9999999991",
                 "4322214847"));
+
+            Output.WriteLine(BuildPriceLabel("非洲阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
+                12663.00m,
+                80.00m,
+                "200g",
+                "盒",
+                "9999999991",
+                "4322214847隔壁老王的神兽"));
         }
 
         private string BuildPriceLabel(string title, decimal? originalPrice, decimal actualPrice, string specification,
             string unit, string barcode, string qrCode)
         {
             var leftMargin = 0;
+            var xMargin = 30;
+            var yMargin = 30;
             // 设置打印页
             Printer.SetPage(540, 300);
             // 打印标题
-            Printer.DrawText(leftMargin, 24, 520, 60, title, FontSize.Size24, TextStyle.Bold, PrintColor.Black,
+            Printer.DrawText(30 - xMargin, 49 - yMargin, 480, 66, title, FontSize.Size24, TextStyle.None, PrintColor.Black,
                 RotationAngle.None);
-            // 打印价格
-            var price = actualPrice.ToString("F");
-            var prices = price.Split('.');
-            var integerPrice = prices[0];
-            var decimalPrice = prices[1];
-            var fontSize = FontSize.Size64;
-            Output.WriteLine(integerPrice.Length.ToString());
-            var integerPriceWidth = ((int)fontSize * integerPrice.Length) / 2;
-            Printer.DrawText(70, 100, 0, 0, "￥", FontSize.Size32, TextStyle.None, PrintColor.Black,
-                RotationAngle.None);
-            Printer.DrawText(100, 78, 0, 0, integerPrice, fontSize, TextStyle.None, PrintColor.Black,
-                RotationAngle.None);
-            Printer.DrawText(100 + integerPriceWidth, 80, $".{decimalPrice}", FontSize.Size24);
-            Printer.DrawText(100 + integerPriceWidth, 110, $"/{unit}", FontSize.Size24);
+            if (originalPrice == null)
+            {
+                // 打印正价
+                Printer.BilingualLabel(30 - xMargin, 116 - yMargin, "售价：", "Price", 6, zhCnFontSize: FontSize.Size16);
+                Printer.GoodsPriceLabel(78 - xMargin, 190 - yMargin, actualPrice, unit);
+            }
+            else
+            {
+                // 打印特价
+                var originalPriceStr = $"原价：{originalPrice.Value:F}";
+                var width = ((originalPriceStr.Length + 3) * 16) / 2;
+                Printer.DrawLine(30 - xMargin, 110 - yMargin + 8, 30 - xMargin + width, 110 - yMargin + 8);
+                Printer.BilingualLabel(30 - xMargin, 110 - yMargin, originalPriceStr, "Price", 6, zhCnFontSize: FontSize.Size16);
+                Printer.BilingualLabel(30 - xMargin, 154 - yMargin, $"优惠价：", "On sale", 6, zhCnFontSize: FontSize.Size16);
+                Printer.GoodsPriceLabel(98 - xMargin, 199 - yMargin, actualPrice, unit);
+            }
 
-            var spacing = 5;
             // 辅助属性
-            Printer.DrawText(leftMargin, 155, $"规格：{specification}", FontSize.Size24);
-            Printer.DrawText(leftMargin, 179 + spacing, $"SPEC", FontSize.Size16);
+            Printer.BilingualLabel(30 - xMargin, 200 - yMargin, $"规格：{specification}", "SPEC", 6);
 
             //条码
-            Printer.DrawText(leftMargin, 203 + spacing, $"条码：{barcode}", FontSize.Size24);
-            Printer.DrawText(leftMargin, 227 + spacing, "Barcode", FontSize.Size16);
+            Printer.BilingualLabel(30 - xMargin, 252 - yMargin, $"条码：{barcode}", "Barcode", 6);
 
             // 二维码
-            Printer.DrawQrCode(360, 80, qrCode, QrCodeUnitSize.Size6, QrCodeCorrectionLevel.L, RotationAngle.None);
+            Printer.DrawQrCode(390 - xMargin, 115 - yMargin, qrCode, QrCodeUnitSize.Size6, QrCodeCorrectionLevel.L, RotationAngle.None);
 
             // 监管电话
-            Printer.DrawText(340, 220, $"监管电话：12358", FontSize.Size24);
-            Printer.DrawText(340, 244 + spacing, "Complaints Hotline", FontSize.Size16);
+            Printer.BilingualLabel(358 - xMargin, 251 - yMargin, $"监管电话：12358", "Complaints Hotline", 6);
+
             return Printer.Build().ToHex();
+        }
+    }
+
+    /// <summary>
+    /// 扩展
+    /// </summary>
+    internal static class Extensions
+    {
+        /// <summary>
+        /// 双语标签
+        /// </summary>
+        /// <param name="protocol">协议</param>
+        /// <param name="startX">标签起始x坐标</param>
+        /// <param name="startY">标签起始y坐标</param>
+        /// <param name="zhCnLabel">中文标签</param>
+        /// <param name="enLabel">英文标签</param>
+        /// <param name="lineSpacing">行距</param>
+        /// <param name="zhCnFontSize">中文字体大小</param>
+        /// <param name="enFontSize">英文字体大小</param>
+        public static IBluetoothPrinterProtocol BilingualLabel(this IBluetoothPrinterProtocol protocol, int startX,
+            int startY, string zhCnLabel, string enLabel, int lineSpacing = 5, FontSize zhCnFontSize = FontSize.Size24, FontSize enFontSize = FontSize.Size16)
+        {
+            protocol.DrawText(startX, startY, zhCnLabel, zhCnFontSize);
+            protocol.DrawText(startX, startY + (int)zhCnFontSize + lineSpacing, enLabel, enFontSize);
+            return protocol;
+        }
+
+        public static IBluetoothPrinterProtocol GoodsPriceLabel(this IBluetoothPrinterProtocol protocol, int startX,
+            int startY, decimal price, string unit)
+        {
+            // 获取比例
+            var symbolScale = GetScale("symbol");
+            var priceScale = GetScale("price");
+            var unitScale = GetScale("unit");
+            var decimalScale = GetScale("decimal");
+
+            // 获取分离后的价格
+            var priceResult = SplitPrice(price);
+
+            // 获取比例结果
+            var symbolScaleResult = ComputeScale(symbolScale.widthScale, symbolScale.heightScale, symbolScale.fontSize);
+            var priceScaleResult= ComputeScale(priceScale.widthScale, priceScale.heightScale, priceScale.fontSize);
+            var unitScaleResult = ComputeScale(unitScale.widthScale, unitScale.heightScale, unitScale.fontSize);
+            var decimalScaleResult = ComputeScale(decimalScale.widthScale, decimalScale.heightScale, decimalScale.fontSize);
+
+            // 获取整数价格宽度
+            var integerPriceWidth = ComputeWidth(priceScale.widthScale, priceScale.fontSize, priceResult.integerPrice);
+
+            // 设置金钱符号
+            protocol.AppendLine($"SETMAG {symbolScale.widthScale} {symbolScale.heightScale}");
+            protocol.AppendLine($"T 03 0 {startX} {startY - symbolScaleResult.height} ¥");
+
+            // 设置整数价格
+            protocol.AppendLine($"SETMAG {priceScale.widthScale} {priceScale.heightScale}");
+            protocol.AppendLine($"T 03 0 {startX + symbolScaleResult.width} {startY - priceScaleResult.height} {priceResult.integerPrice}");
+
+            // 设置小数价格
+            protocol.AppendLine($"SETMAG {decimalScale.widthScale} {decimalScale.heightScale}");
+            protocol.AppendLine(
+                $"T 03 0 {startX + symbolScaleResult.width + integerPriceWidth} {startY - decimalScaleResult.height - unitScaleResult.height - 16} .{priceResult.decimalPrice}");
+
+            // 设置单位
+            protocol.AppendLine($"SETMAG {unitScale.widthScale} {unitScale.heightScale}");
+            protocol.AppendLine(
+                $"T 03 0 {startX + symbolScaleResult.width + integerPriceWidth} {startY - symbolScaleResult.height + 16} /{unit}");
+            return protocol;
+        }
+
+        /// <summary>
+        /// 分隔价格
+        /// </summary>
+        /// <param name="price">价格</param>
+        private static (string integerPrice, string decimalPrice) SplitPrice(decimal price)
+        {
+            var priceStr = price.ToString("F");
+            var prices = priceStr.Split('.');
+            return (prices[0], prices[1]);
+        }
+
+        private static int ComputeWidth(int scale, int fontSize, string content)
+        {
+            return ComputeWidth(scale * fontSize, content);
+        }
+
+        /// <summary>
+        /// 计算宽度
+        /// </summary>
+        /// <param name="fontSize">字体尺寸</param>
+        /// <param name="content">内容</param>
+        private static int ComputeWidth(int fontSize, string content) => fontSize * content.Length / 2;
+
+        /// <summary>
+        /// 计算比例
+        /// </summary>
+        /// <param name="widthScale">宽比例</param>
+        /// <param name="heightScale">高比例</param>
+        /// <param name="fontSize">字体大小</param>
+        private static (int width, int height) ComputeScale(int widthScale, int heightScale,int fontSize) => (widthScale * fontSize, heightScale * fontSize);
+
+        /// <summary>
+        /// 获取比例
+        /// </summary>
+        /// <param name="type">类型</param>
+        private static (int widthScale, int heightScale,int fontSize) GetScale(string type)
+        {
+            switch (type)
+            {
+                case "symbol":
+                    return (2, 2, 24);
+                case "price":
+                    return (2, 3, 24);
+                case "unit":
+                    return (1, 1, 24);
+                case "decimal":
+                    return (1, 1, 24);
+                default:
+                    throw new NotImplementedException($"尚未实现该[{type}]类型的比例");
+            }
         }
     }
 }

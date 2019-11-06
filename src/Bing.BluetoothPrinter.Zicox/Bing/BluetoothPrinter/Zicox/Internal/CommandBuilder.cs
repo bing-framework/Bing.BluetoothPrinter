@@ -102,8 +102,9 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         {
             var coordinate = Helper.GetBarcodeCoordinate(item);
             var cmd = Helper.GetBarcodeRotateCommand(item.Rotate);
-            Writer.WriteLine(
-                $"{cmd} QR {coordinate.x} {coordinate.y} M 2 U {item.Size}\n{item.ErrorLevel}A,{item.Text}\nENDQR");
+            Writer.WriteLine($"{cmd} QR {coordinate.x} {coordinate.y} M 2 U {item.Size}");
+            Writer.WriteLine($"{item.ErrorLevel}A,{item.Text}");
+            Writer.WriteLine("ENDQR");
         }
 
         public void DrawBitmap(int pageWidth, int pageHeight, DrawBitmapItem item)
