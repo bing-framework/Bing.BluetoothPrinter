@@ -170,53 +170,25 @@
         /// </summary>
         Size264 = 264,
         /// <summary>
-        /// 272号字体
-        /// </summary>
-        Size272 = 272,
-        /// <summary>
         /// 288号字体
         /// </summary>
         Size288 = 288,
-        /// <summary>
-        /// 304号字体
-        /// </summary>
-        Size304 = 304,
         /// <summary>
         /// 312号字体
         /// </summary>
         Size312 = 312,
         /// <summary>
-        /// 320号字体
-        /// </summary>
-        Size320 = 320,
-        /// <summary>
         /// 336号字体
         /// </summary>
         Size336 = 336,
-        /// <summary>
-        /// 352号字体
-        /// </summary>
-        Size352 = 352,
         /// <summary>
         /// 360号字体
         /// </summary>
         Size360 = 360,
         /// <summary>
-        /// 368号字体
-        /// </summary>
-        Size368 = 368,
-        /// <summary>
         /// 384号字体
         /// </summary>
         Size384 = 384,
-        /// <summary>
-        /// 400号字体
-        /// </summary>
-        Size400 = 400,
-        /// <summary>
-        /// 408号字体
-        /// </summary>
-        Size408 = 408,
     }
 
     /// <summary>

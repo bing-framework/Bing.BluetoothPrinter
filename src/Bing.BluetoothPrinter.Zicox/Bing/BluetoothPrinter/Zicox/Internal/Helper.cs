@@ -39,72 +39,58 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
             switch (fontSize)
             {
                 case 16:
-                    return (55, 0, 0);
-                case 24:
-                    return (24, 0, 0);
-                case 32:
                     return (55, 0, 1);
-                case 48:
+                case 24:
+                    return (24, 0, 1);
+                case 32:
                     return (55, 0, 2);
-                case 64:
-                    return (55, 0, 3);
-                case 72:
+                case 48:
                     return (24, 0, 2);
-                case 80:
+                case 64:
                     return (55, 0, 4);
-                case 96:
+                case 72:
+                    return (24, 0, 3);
+                case 80:
                     return (55, 0, 5);
-                case 112:
-                    return (55, 0, 6);
-                case 120:
+                case 96:
                     return (24, 0, 4);
-                case 128:
+                case 112:
                     return (55, 0, 7);
-                case 144:
+                case 120:
+                    return (24, 0, 5);
+                case 128:
                     return (55, 0, 8);
-                case 160:
-                    return (55, 0, 9);
-                case 168:
+                case 144:
                     return (24, 0, 6);
-                case 176:
+                case 160:
                     return (55, 0, 10);
-                case 192:
+                case 168:
+                    return (24, 0, 7);
+                case 176:
                     return (55, 0, 11);
-                case 208:
-                    return (55, 0, 12);
-                case 216:
+                case 192:
                     return (24, 0, 8);
-                case 224:
+                case 208:
                     return (55, 0, 13);
-                case 240:
+                case 216:
+                    return (24, 0, 9);
+                case 224:
                     return (55, 0, 14);
-                case 256:
-                    return (55, 0, 15);
-                case 264:
+                case 240:
                     return (24, 0, 10);
-                case 272:
+                case 256:
                     return (55, 0, 16);
+                case 264:
+                    return (24, 0, 11);
                 case 288:
-                    return (55, 0, 17);
-                case 304:
-                    return (55, 0, 18);
-                case 312:
                     return (24, 0, 12);
-                case 320:
-                    return (55, 0, 19);
+                case 312:
+                    return (24, 0, 13);
                 case 336:
-                    return (55, 0, 20);
-                case 352:
-                    return (55, 0, 21);
-                case 360:
                     return (24, 0, 14);
-                case 368:
-                    return (55, 0, 22);
+                case 360:
+                    return (24, 0, 15);
                 case 384:
-                    return (55, 0, 23);
-                case 400:
-                    return (55, 0, 24);
-                case 408:
                     return (24, 0, 16);
                 default:
                     return (55, 0, 1);
