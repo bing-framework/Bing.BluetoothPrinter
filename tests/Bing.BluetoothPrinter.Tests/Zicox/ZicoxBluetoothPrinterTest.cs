@@ -195,6 +195,16 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
                 "4322214847隔壁老王的神兽"));
         }
 
+        /// <summary>
+        /// 构建价格标签
+        /// </summary>
+        /// <param name="title">标题</param>
+        /// <param name="originalPrice">来源价格</param>
+        /// <param name="actualPrice">真实价格</param>
+        /// <param name="specification">分隔符</param>
+        /// <param name="unit">单位</param>
+        /// <param name="barcode">条形码</param>
+        /// <param name="qrCode">二维码</param>
         private string BuildPriceLabel(string title, decimal? originalPrice, decimal actualPrice, string specification,
             string unit, string barcode, string qrCode)
         {
@@ -236,6 +246,23 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
             Printer.BilingualLabel(358 - xMargin, 251 - yMargin, $"监管电话：12358", "Complaints Hotline", 6);
 
             return Printer.Build().ToHex();
+        }
+
+        /// <summary>
+        /// 测试 - 绘制虚线
+        /// </summary>
+        [Fact]
+        public void Test_WriteDottedLine()
+        {
+            // 设置打印页
+            Printer.SetPage(540, 300);
+            var sb = new StringBuilder();
+            for (int i = 0; i < 43; i++)
+            {
+                sb.Append("-");
+            }
+            Printer.DrawText(0, 10, sb.ToString(), FontSize.Size24, TextStyle.Bold);
+            Output.WriteLine(Printer.Build().ToHex());
         }
     }
 
