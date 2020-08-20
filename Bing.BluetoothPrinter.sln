@@ -1,13 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bing.BluetoothPrinter", "src\Bing.BluetoothPrinter\Bing.BluetoothPrinter.csproj", "{8AEE4177-529B-4A2E-975C-ED1929B09DA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bing.BluetoothPrinter.Zicox", "src\Bing.BluetoothPrinter.Zicox\Bing.BluetoothPrinter.Zicox.csproj", "{339302E9-7ED8-42A2-B26D-DDFE5C3A7B11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bing.BluetoothPrinter.Tests", "tests\Bing.BluetoothPrinter.Tests\Bing.BluetoothPrinter.Tests.csproj", "{420C82F2-50B6-4C01-9AA0-97AA12AF0C27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bing.BluetoothPrinter.Tests", "tests\Bing.BluetoothPrinter.Tests\Bing.BluetoothPrinter.Tests.csproj", "{420C82F2-50B6-4C01-9AA0-97AA12AF0C27}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01-src", "01-src", "{AA4B8943-6E94-46BC-A322-7EAB9DEA9CB3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02-tests", "02-tests", "{2A9FC670-4064-46C7-BC33-643D0C0337CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +34,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8AEE4177-529B-4A2E-975C-ED1929B09DA4} = {AA4B8943-6E94-46BC-A322-7EAB9DEA9CB3}
+		{339302E9-7ED8-42A2-B26D-DDFE5C3A7B11} = {AA4B8943-6E94-46BC-A322-7EAB9DEA9CB3}
+		{420C82F2-50B6-4C01-9AA0-97AA12AF0C27} = {2A9FC670-4064-46C7-BC33-643D0C0337CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2E4F7E40-E86A-43BC-A34D-957B31A564AD}

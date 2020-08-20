@@ -1,10 +1,14 @@
-﻿namespace Bing.BluetoothPrinter.Zicox.Metadata
+﻿using Bing.BluetoothPrinter.Zicox.Internal;
+
+namespace Bing.BluetoothPrinter.Zicox.Metadata
 {
     /// <summary>
     /// 文字明细
     /// </summary>
-    internal class DrawTextItem
+    internal class DrawTextItem : DrawItemBase
     {
+        private DrawItemBase _drawItemBaseImplementation;
+
         /// <summary>
         /// 是否加粗
         /// </summary>
@@ -49,5 +53,13 @@
         /// 是否下划线
         /// </summary>
         public bool Underline { get; set; }
+
+        /// <summary>
+        /// 构建
+        /// </summary>
+        /// <param name="pageWidth">页宽</param>
+        /// <param name="pageHeight">页高</param>
+        /// <param name="builder">命令构建器</param>
+        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder) => builder.DrawText(pageWidth, pageHeight, this);
     }
 }

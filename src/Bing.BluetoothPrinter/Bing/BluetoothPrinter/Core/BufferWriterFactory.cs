@@ -9,7 +9,6 @@ namespace Bing.BluetoothPrinter.Core
     /// </summary>
     public static class BufferWriterFactory
     {
-
         /// <summary>
         /// 创建默认缓冲区写入器
         /// </summary>

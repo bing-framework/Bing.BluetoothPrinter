@@ -1,9 +1,11 @@
-﻿namespace Bing.BluetoothPrinter.Zicox.Metadata
+﻿using Bing.BluetoothPrinter.Zicox.Internal;
+
+namespace Bing.BluetoothPrinter.Zicox.Metadata
 {
     /// <summary>
     /// 二维码明细
     /// </summary>
-    internal class DrawQrCodeItem
+    internal class DrawQrCodeItem : DrawItemBase
     {
         /// <summary>
         /// 二维码纠错级别
@@ -34,5 +36,13 @@
         /// 二维码内容
         /// </summary>
         public string Text { get; set; }
+
+        /// <summary>
+        /// 构建
+        /// </summary>
+        /// <param name="pageWidth">页宽</param>
+        /// <param name="pageHeight">页高</param>
+        /// <param name="builder">命令构建器</param>
+        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder) => builder.DrawQrCode(pageWidth, pageHeight, this);
     }
 }

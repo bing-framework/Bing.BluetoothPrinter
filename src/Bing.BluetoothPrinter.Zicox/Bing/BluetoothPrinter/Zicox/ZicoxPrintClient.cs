@@ -4,6 +4,7 @@ using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
 using Bing.BluetoothPrinter.Core;
 using Bing.BluetoothPrinter.Core.Extensions;
+using Bing.BluetoothPrinter.Metadata;
 using Bing.BluetoothPrinter.Zicox.Internal;
 using Bing.BluetoothPrinter.Zicox.Metadata;
 
@@ -33,6 +34,11 @@ namespace Bing.BluetoothPrinter.Zicox
         /// 纸张旋转角度
         /// </summary>
         public int PagerRotate { get; internal set; }
+
+        /// <summary>
+        /// 绘制列表
+        /// </summary>
+        internal List<DrawItemBase> Items { get; set; } = new List<DrawItemBase>();
 
         /// <summary>
         /// 条码列表
@@ -80,6 +86,11 @@ namespace Bing.BluetoothPrinter.Zicox
         internal CommandBuilder CommandBuilder { get; private set; }
 
         /// <summary>
+        /// 命令行集合元数据
+        /// </summary>
+        internal CommandCollectionMetadata Metadata { get; private set; }
+
+        /// <summary>
         /// 初始化一个<see cref="ZicoxPrintClient"/>类型的实例
         /// </summary>
         public ZicoxPrintClient()
@@ -87,6 +98,7 @@ namespace Bing.BluetoothPrinter.Zicox
             Writer = BufferWriterFactory.CreateDefaultWriter();
             RawWriter = BufferWriterFactory.CreateDefaultWriter();
             CommandBuilder = new CommandBuilder(Writer);
+            Metadata = new CommandCollectionMetadata();
         }
 
         /// <summary>
@@ -98,6 +110,7 @@ namespace Bing.BluetoothPrinter.Zicox
             Writer = BufferWriterFactory.CreateDefaultWriter(encoding);
             RawWriter = BufferWriterFactory.CreateDefaultWriter(encoding);
             CommandBuilder = new CommandBuilder(Writer);
+            Metadata = new CommandCollectionMetadata();
         }
 
         /// <summary>
@@ -109,6 +122,7 @@ namespace Bing.BluetoothPrinter.Zicox
         {
             this.Width = width;
             this.Height = height;
+            this.Items.Clear();
             this.BarcodeList.Clear();
             this.QrCodeList.Clear();
             this.BitmapList.Clear();
@@ -118,6 +132,7 @@ namespace Bing.BluetoothPrinter.Zicox
             this.RawWriter.Clear();
             this.Writer.Clear();
             this.CommandBuilder.Writer.Clear();
+            this.Metadata.Clear();
             return this;
         }
 
@@ -148,7 +163,7 @@ namespace Bing.BluetoothPrinter.Zicox
                 Reverse = reverse,
                 Underline = underline
             };
-            this.TextList.Add(item);
+            Items.Add(item);
             return this;
         }
 
@@ -162,7 +177,7 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="width">线条宽度</param>
         public ZicoxPrintClient DrawLine(int x0, int y0, int x1, int y1, int width)
         {
-            var item = new DrawLineItem()
+            var item = new DrawLineItem
             {
                 X0 = x0,
                 Y0 = y0,
@@ -170,7 +185,7 @@ namespace Bing.BluetoothPrinter.Zicox
                 Y1 = y1,
                 Width = width,
             };
-            this.LineList.Add(item);
+            Items.Add(item);
             return this;
         }
 
@@ -184,7 +199,7 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="width">线条宽度</param>
         public ZicoxPrintClient DrawBox(int x0, int y0, int x1, int y1, int width)
         {
-            var item = new DrawBoxItem()
+            var item = new DrawBoxItem
             {
                 X0 = x0,
                 Y0 = y0,
@@ -192,7 +207,7 @@ namespace Bing.BluetoothPrinter.Zicox
                 Y1 = y1,
                 Width = width,
             };
-            this.BoxList.Add(item);
+            Items.Add(item);
             return this;
         }
 
@@ -209,7 +224,7 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="ratio">宽条与窄条的比率</param>
         public ZicoxPrintClient DrawBarcode1D(string type, int x, int y, string text, int lineWidth, int height, int rotate, int ratio)
         {
-            var item = new DrawBarcode1DItem()
+            var item = new DrawBarcode1DItem
             {
                 Type = type,
                 X = x,
@@ -220,7 +235,7 @@ namespace Bing.BluetoothPrinter.Zicox
                 Rotate = rotate,
                 Ratio = ratio,
             };
-            this.BarcodeList.Add(item);
+            Items.Add(item);
             return this;
         }
 
@@ -235,7 +250,7 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="rotate">旋转角度</param>
         public ZicoxPrintClient DrawQrCode(int x, int y, string text, int size, string errorLevel, int rotate)
         {
-            var item = new DrawQrCodeItem()
+            var item = new DrawQrCodeItem
             {
                 X = x,
                 Y = y,
@@ -244,7 +259,7 @@ namespace Bing.BluetoothPrinter.Zicox
                 Rotate = rotate,
                 Text = text,
             };
-            this.QrCodeList.Add(item);
+            Items.Add(item);
             return this;
         }
 
@@ -257,14 +272,14 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <param name="rotate">是否旋转</param>
         public ZicoxPrintClient DrawBitmap(Bitmap bitmap, int x, int y, bool rotate)
         {
-            var item = new DrawBitmapItem()
+            var item = new DrawBitmapItem
             {
                 Bitmap = bitmap,
                 X = x,
                 Y = y,
                 Rotate = rotate
             };
-            this.BitmapList.Add(item);
+            Items.Add(item);
             return this;
         }
 
@@ -341,12 +356,13 @@ namespace Bing.BluetoothPrinter.Zicox
         {
             Writer.WriteLine($"! 0 200 200 {Height} 1");
             Writer.WriteLine($"PAGE-WIDTH {Width}");
-            BuildText(Width, Height);
-            BuildLine(Width, Height);
-            BuildBox(Width, Height);
-            BuildBarcode(Width, Height);
-            BuildQrCode(Width, Height);
-            BuildBitmap(Width, Height);
+            Items.ForEach(x => x.Build(Width, Height, CommandBuilder));
+            //BuildText(Width, Height);
+            //BuildLine(Width, Height);
+            //BuildBox(Width, Height);
+            //BuildBarcode(Width, Height);
+            //BuildQrCode(Width, Height);
+            //BuildBitmap(Width, Height);
             Writer.Write(RawWriter.GetBytes());
             Writer.WriteLine("PRINT");
             return Writer;

@@ -18,10 +18,7 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         /// 初始化一个<see cref="CommandBuilder"/>类型的实例
         /// </summary>
         /// <param name="writer">缓冲区写入器</param>
-        public CommandBuilder(IBufferWriter writer)
-        {
-            Writer = writer;
-        }
+        public CommandBuilder(IBufferWriter writer) => Writer = writer;
 
         /// <summary>
         /// 画文本
@@ -108,6 +105,11 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
         }
 
         public void DrawBitmap(int pageWidth, int pageHeight, DrawBitmapItem item)
+        {
+
+        }
+
+        public void DrawRaw(int pageWidth, int pageHeight, DrawRawItem item)
         {
 
         }

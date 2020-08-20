@@ -1,9 +1,11 @@
-﻿namespace Bing.BluetoothPrinter.Zicox.Metadata
+﻿using Bing.BluetoothPrinter.Zicox.Internal;
+
+namespace Bing.BluetoothPrinter.Zicox.Metadata
 {
     /// <summary>
     /// 一维条码明细
     /// </summary>
-    internal class DrawBarcode1DItem
+    internal class DrawBarcode1DItem: DrawItemBase
     {
         /// <summary>
         /// 高度
@@ -44,5 +46,13 @@
         /// 条码起始y坐标
         /// </summary>
         public int Y { get; set; }
+
+        /// <summary>
+        /// 构建
+        /// </summary>
+        /// <param name="pageWidth">页宽</param>
+        /// <param name="pageHeight">页高</param>
+        /// <param name="builder">命令构建器</param>
+        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder) => builder.DrawBarcode(pageWidth, pageHeight, this);
     }
 }
