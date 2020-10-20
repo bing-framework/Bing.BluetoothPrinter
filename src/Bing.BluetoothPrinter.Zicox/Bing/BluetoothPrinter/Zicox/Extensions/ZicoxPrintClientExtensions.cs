@@ -63,6 +63,19 @@ namespace Bing.BluetoothPrinter.Zicox.Extensions
         }
 
         /// <summary>
+        /// 绘制虚线
+        /// </summary>
+        /// <param name="client">客户端</param>
+        /// <param name="x0">虚线起始x坐标</param>
+        /// <param name="y0">虚线起始y坐标</param>
+        public static ZicoxPrintClient DrawDashLine(this ZicoxPrintClient client, int x0, int y0)
+        {
+            for (int i = 0; i < client.Width; i = ((i + 16) - 1) + 1)
+                client.DrawText(x0 + i, y0 - 10, "-", 24, 0, 0, false, false, false);
+            return client;
+        }
+
+        /// <summary>
         /// 打印填充矩形
         /// </summary>
         /// <param name="client">客户端</param>

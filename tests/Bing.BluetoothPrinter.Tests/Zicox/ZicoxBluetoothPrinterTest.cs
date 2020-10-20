@@ -39,13 +39,15 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_GoodsLabel()
         {
-            Output.WriteLine(BuildGoodsLabel("美国阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
+            var result = BuildGoodsLabel("美国阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
                 "200g",
                 "瓶",
                 "2019-11-04",
                 3,
                 "9999999991",
-                "隔壁老王的二维码"));
+                "隔壁老王的二维码");
+            Output.WriteLine(result.ToHex());
+            Print(result.GetBytes());
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         /// <param name="shelfLife">保质期</param>
         /// <param name="barcode">条形码</param>
         /// <param name="qrCode">二维码</param>
-        private string BuildGoodsLabel(string title, string specification, string unit, string packingDate,
+        private IBufferWriter BuildGoodsLabel(string title, string specification, string unit, string packingDate,
             int shelfLife, string barcode, string qrCode)
         {
             var leftMargin = 0;
@@ -71,7 +73,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
                 .DrawText(leftMargin, 250, $"保质期：{shelfLife}天", FontSize.Size24)
                 .DrawText(leftMargin, 290, $"条码：{barcode}", FontSize.Size24)
                 .DrawQrCode(358, 160, qrCode, QrCodeUnitSize.Size8, QrCodeCorrectionLevel.L, RotationAngle.None);
-            return Printer.Build().ToHex();
+            return Printer.Build();
         }
 
         /// <summary>
@@ -95,7 +97,10 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
                 AddText(ref index, 24, i, (i + 1) * 24);
                 Output.WriteLine($"字号: {(i + 1) * 24}");
             }
-            Output.WriteLine(Printer.Build().ToHex());
+
+            var result = Printer.Build();
+            Output.WriteLine(result.ToHex());
+            Print(result.GetBytes());
         }
 
         private void AddText(ref int index, int font, int scale, int fontSize)
@@ -178,21 +183,25 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_PriceLabel()
         {
-            Output.WriteLine(BuildPriceLabel("美国阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
+            var result1 = BuildPriceLabel("美国阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
                 null,
                 800.00m,
                 "200g",
                 "盒",
                 "9999999991",
-                "4322214847"));
+                "4322214847");
+            Output.WriteLine(result1.ToHex());
+            Print(result1.GetBytes());
 
-            Output.WriteLine(BuildPriceLabel("非洲阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
+            var result2 = BuildPriceLabel("非洲阿拉巴利桑那州缓存地铁站进口毛豆仁 200g/盒",
                 12663.00m,
                 80.00m,
                 "200g",
                 "盒",
                 "9999999991",
-                "4322214847隔壁老王的神兽"));
+                "4322214847隔壁老王的神兽");
+            Output.WriteLine(result2.ToHex());
+            Print(result2.GetBytes());
         }
 
         /// <summary>
@@ -205,7 +214,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         /// <param name="unit">单位</param>
         /// <param name="barcode">条形码</param>
         /// <param name="qrCode">二维码</param>
-        private string BuildPriceLabel(string title, decimal? originalPrice, decimal actualPrice, string specification,
+        private IBufferWriter BuildPriceLabel(string title, decimal? originalPrice, decimal actualPrice, string specification,
             string unit, string barcode, string qrCode)
         {
             var leftMargin = 0;
@@ -245,7 +254,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
             // 监管电话
             Printer.BilingualLabel(358 - xMargin, 251 - yMargin, $"监管电话：12358", "Complaints Hotline", 6);
 
-            return Printer.Build().ToHex();
+            return Printer.Build();
         }
 
         /// <summary>
@@ -262,7 +271,9 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
                 sb.Append("-");
             }
             Printer.DrawText(0, 10, sb.ToString(), FontSize.Size24, TextStyle.Bold);
-            Output.WriteLine(Printer.Build().ToHex());
+            var result = Printer.Build();
+            Output.WriteLine(result.ToHex());
+            Print(result.GetBytes());
         }
     }
 
