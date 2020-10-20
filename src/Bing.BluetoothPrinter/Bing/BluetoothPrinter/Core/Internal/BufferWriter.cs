@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
 
@@ -15,6 +16,11 @@ namespace Bing.BluetoothPrinter.Core.Internal
         private readonly List<byte> _buffer;
 
         /// <summary>
+        /// 原始命令
+        /// </summary>
+        private readonly List<string> _sourceCommands;
+
+        /// <summary>
         /// 字符编码
         /// </summary>
         private readonly Encoding _encoding;
@@ -27,6 +33,7 @@ namespace Bing.BluetoothPrinter.Core.Internal
         {
             _encoding = encoding;
             _buffer = new List<byte>();
+            _sourceCommands = new List<string>();
         }
 
         /// <summary>
@@ -51,6 +58,7 @@ namespace Bing.BluetoothPrinter.Core.Internal
                 return this;
             var bytes = _encoding.GetBytes(value);
             _buffer.AddRange(bytes);
+            _sourceCommands.Add(value);
             return this;
         }
 
@@ -60,6 +68,7 @@ namespace Bing.BluetoothPrinter.Core.Internal
         public IBufferWriter Clear()
         {
             _buffer.Clear();
+            _sourceCommands.Clear();
             return this;
         }
 
@@ -79,6 +88,19 @@ namespace Bing.BluetoothPrinter.Core.Internal
             foreach (var b in _buffer)
                 result.AppendFormat("{0:x2}", b);
             return result.Replace("-", "").ToString();
+        }
+
+        /// <summary>
+        /// 输出字符串
+        /// </summary>
+        public override string ToString()
+        {
+            if (_sourceCommands.Count == 0)
+                return string.Empty;
+            var result = new StringBuilder();
+            foreach (var command in _sourceCommands)
+                result.Append(command);
+            return result.ToString();
         }
     }
 }

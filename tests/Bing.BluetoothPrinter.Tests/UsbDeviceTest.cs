@@ -23,5 +23,7 @@ namespace Bing.BluetoothPrinter.Tests
             var result = RawPrinterHelper.OpenPrinter(name, out hPrinter, IntPtr.Zero);
             Output.WriteLine($"result: {result}, h: {hPrinter}");
         }
+
+
     }
 }

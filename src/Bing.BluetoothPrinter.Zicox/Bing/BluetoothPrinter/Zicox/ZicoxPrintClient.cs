@@ -357,12 +357,6 @@ namespace Bing.BluetoothPrinter.Zicox
             Writer.WriteLine($"! 0 200 200 {Height} 1");
             Writer.WriteLine($"PAGE-WIDTH {Width}");
             Items.ForEach(x => x.Build(Width, Height, CommandBuilder));
-            //BuildText(Width, Height);
-            //BuildLine(Width, Height);
-            //BuildBox(Width, Height);
-            //BuildBarcode(Width, Height);
-            //BuildQrCode(Width, Height);
-            //BuildBitmap(Width, Height);
             Writer.Write(RawWriter.GetBytes());
             Writer.WriteLine("PRINT");
             return Writer;

@@ -110,8 +110,7 @@ namespace Bing.BluetoothPrinter.Zicox.Extensions
         /// <param name="fontSize">字体大小</param>
         /// <param name="style">样式</param>
         /// <param name="rotate">旋转角度</param>
-        public static ZicoxPrintClient DrawText(this ZicoxPrintClient client, int startX, int startY, string text,
-            int fontSize, int style, int rotate)
+        public static ZicoxPrintClient DrawText(this ZicoxPrintClient client, int startX, int startY, string text, int fontSize, int style, int rotate)
         {
             var styleResult = Helper.ConvertStyle(style);
             return client.DrawText(startX, startY, text, fontSize, 0, rotate, styleResult.bold, false, styleResult.underline);
