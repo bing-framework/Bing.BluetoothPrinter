@@ -8,6 +8,11 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
     internal class DrawLineItem : DrawItemBase
     {
         /// <summary>
+        /// 元数据类型
+        /// </summary>
+        public override MetadataType MetadataType => MetadataType.Line;
+
+        /// <summary>
         /// 线条宽度
         /// </summary>
         public int Width { get; set; }

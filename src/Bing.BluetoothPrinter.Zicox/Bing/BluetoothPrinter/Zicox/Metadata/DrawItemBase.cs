@@ -8,6 +8,11 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
     internal abstract class DrawItemBase
     {
         /// <summary>
+        /// 元数据类型
+        /// </summary>
+        public abstract MetadataType MetadataType { get; }
+
+        /// <summary>
         /// 构建
         /// </summary>
         /// <param name="pageWidth">页宽</param>

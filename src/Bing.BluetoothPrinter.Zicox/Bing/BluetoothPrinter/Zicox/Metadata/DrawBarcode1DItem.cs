@@ -8,6 +8,11 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
     internal class DrawBarcode1DItem: DrawItemBase
     {
         /// <summary>
+        /// 元数据类型
+        /// </summary>
+        public override MetadataType MetadataType => MetadataType.Barcode;
+
+        /// <summary>
         /// 高度
         /// </summary>
         public int Height { get; set; }

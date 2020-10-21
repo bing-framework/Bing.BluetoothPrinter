@@ -9,6 +9,11 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
     internal class DrawBitmapItem: DrawItemBase
     {
         /// <summary>
+        /// 元数据类型
+        /// </summary>
+        public override MetadataType MetadataType => MetadataType.Bitmap;
+
+        /// <summary>
         /// 图片数据
         /// </summary>
         public Bitmap Bitmap { get; set; }

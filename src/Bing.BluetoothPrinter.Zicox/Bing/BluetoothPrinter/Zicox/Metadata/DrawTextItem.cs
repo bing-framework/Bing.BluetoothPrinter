@@ -7,7 +7,10 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
     /// </summary>
     internal class DrawTextItem : DrawItemBase
     {
-        private DrawItemBase _drawItemBaseImplementation;
+        /// <summary>
+        /// 元数据类型
+        /// </summary>
+        public override MetadataType MetadataType => MetadataType.Text;
 
         /// <summary>
         /// 是否加粗

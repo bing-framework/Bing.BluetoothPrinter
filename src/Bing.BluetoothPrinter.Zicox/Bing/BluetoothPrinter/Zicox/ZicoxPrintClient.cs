@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
 using Bing.BluetoothPrinter.Core;
@@ -21,14 +22,30 @@ namespace Bing.BluetoothPrinter.Zicox
         internal static List<FontInfo> FontInfoList { get; set; } = new List<FontInfo>();
 
         /// <summary>
+        /// 偏移量。整个标签的横向偏移值
+        /// </summary>
+        /// <remarks>此值可以使所有域以指定的单位数量进行横向偏移</remarks>
+        public int Offset { get; internal set; } = 0;
+
+        /// <summary>
         /// 宽度
         /// </summary>
         public int Width { get; internal set; }
 
         /// <summary>
-        /// 高度
+        /// 高度。标签的最大高度。
         /// </summary>
+        /// <remarks>
+        /// 标签最大高度的计算方法是，先测出从第 1 个黑条（或标签间隙）底部到下一个黑条（或标签间隙）顶部之间的距离。
+        /// 然后从中减去 1/16 英寸（1.5 毫米），所得结果即大高度。（以点为单位时：对于 203 d.p.i 打印机，减去 12 点；对于 306 d.p.i. 打印机，减去 18 点）
+        /// </remarks>
         public int Height { get; internal set; }
+
+        /// <summary>
+        /// 标签数量。打印标签数量
+        /// </summary>
+        /// <remarks>最大值 = 1024</remarks>
+        public int Qty { get; internal set; } = 1;
 
         /// <summary>
         /// 纸张旋转角度
@@ -39,36 +56,6 @@ namespace Bing.BluetoothPrinter.Zicox
         /// 绘制列表
         /// </summary>
         internal List<DrawItemBase> Items { get; set; } = new List<DrawItemBase>();
-
-        /// <summary>
-        /// 条码列表
-        /// </summary>
-        internal List<DrawBarcode1DItem> BarcodeList { get; set; } = new List<DrawBarcode1DItem>();
-
-        /// <summary>
-        /// 二维码列表
-        /// </summary>
-        internal List<DrawQrCodeItem> QrCodeList { get; set; } = new List<DrawQrCodeItem>();
-
-        /// <summary>
-        /// 图片列表
-        /// </summary>
-        internal List<DrawBitmapItem> BitmapList { get; set; } = new List<DrawBitmapItem>();
-
-        /// <summary>
-        /// 矩形列表
-        /// </summary>
-        internal List<DrawBoxItem> BoxList { get; set; } = new List<DrawBoxItem>();
-
-        /// <summary>
-        /// 线条列表
-        /// </summary>
-        internal List<DrawLineItem> LineList { get; set; } = new List<DrawLineItem>();
-
-        /// <summary>
-        /// 文本列表
-        /// </summary>
-        internal List<DrawTextItem> TextList { get; set; } = new List<DrawTextItem>();
 
         /// <summary>
         /// 缓冲区写入器
@@ -91,6 +78,11 @@ namespace Bing.BluetoothPrinter.Zicox
         internal CommandCollectionMetadata Metadata { get; private set; }
 
         /// <summary>
+        /// 命令信息
+        /// </summary>
+        internal CommandInfo CommandInfo { get; private set; }
+
+        /// <summary>
         /// 初始化一个<see cref="ZicoxPrintClient"/>类型的实例
         /// </summary>
         public ZicoxPrintClient()
@@ -99,6 +91,7 @@ namespace Bing.BluetoothPrinter.Zicox
             RawWriter = BufferWriterFactory.CreateDefaultWriter();
             CommandBuilder = new CommandBuilder(Writer);
             Metadata = new CommandCollectionMetadata();
+            CommandInfo = new CommandInfo();
         }
 
         /// <summary>
@@ -111,6 +104,7 @@ namespace Bing.BluetoothPrinter.Zicox
             RawWriter = BufferWriterFactory.CreateDefaultWriter(encoding);
             CommandBuilder = new CommandBuilder(Writer);
             Metadata = new CommandCollectionMetadata();
+            CommandInfo = new CommandInfo();
         }
 
         /// <summary>
@@ -123,16 +117,11 @@ namespace Bing.BluetoothPrinter.Zicox
             this.Width = width;
             this.Height = height;
             this.Items.Clear();
-            this.BarcodeList.Clear();
-            this.QrCodeList.Clear();
-            this.BitmapList.Clear();
-            this.BoxList.Clear();
-            this.LineList.Clear();
-            this.TextList.Clear();
             this.RawWriter.Clear();
             this.Writer.Clear();
             this.CommandBuilder.Writer.Clear();
             this.Metadata.Clear();
+            this.CommandInfo.Rest();
             return this;
         }
 
@@ -266,7 +255,7 @@ namespace Bing.BluetoothPrinter.Zicox
         /// <summary>
         /// 打印图片
         /// </summary>
-        /// <param name="bitmap">图片数据</param>
+        /// <param name="bitmap">图片</param>
         /// <param name="x">图片起始x坐标</param>
         /// <param name="y">图片起始y坐标</param>
         /// <param name="rotate">是否旋转</param>
@@ -274,9 +263,9 @@ namespace Bing.BluetoothPrinter.Zicox
         {
             var item = new DrawBitmapItem
             {
-                Bitmap = bitmap,
                 X = x,
                 Y = y,
+                Bitmap = bitmap,
                 Rotate = rotate
             };
             Items.Add(item);
@@ -284,68 +273,31 @@ namespace Bing.BluetoothPrinter.Zicox
         }
 
         /// <summary>
-        /// 构建文本
+        /// 写入原始命令
         /// </summary>
-        /// <param name="pageWidth">页宽</param>
-        /// <param name="pageHeight">页高</param>
-        public ZicoxPrintClient BuildText(int pageWidth, int pageHeight)
+        /// <param name="raw">原始命令</param>
+        public ZicoxPrintClient WriteRaw(string raw)
         {
-            TextList.ForEach(x => CommandBuilder.DrawText(pageWidth, pageHeight, x));
+            var item = new DrawRawItem
+            {
+                Raw = raw
+            };
+            Items.Add(item);
             return this;
         }
 
         /// <summary>
-        /// 构建线条
+        /// 写入原始命令并换行
         /// </summary>
-        /// <param name="pageWidth">页宽</param>
-        /// <param name="pageHeight">页高</param>
-        public ZicoxPrintClient BuildLine(int pageWidth, int pageHeight)
+        /// <param name="raw">原始命令</param>
+        public ZicoxPrintClient WriteRawLine(string raw)
         {
-            LineList.ForEach(x => CommandBuilder.DrawLine(pageWidth, pageHeight, x));
-            return this;
-        }
-
-        /// <summary>
-        /// 构建矩形
-        /// </summary>
-        /// <param name="pageWidth">页宽</param>
-        /// <param name="pageHeight">页高</param>
-        public ZicoxPrintClient BuildBox(int pageWidth, int pageHeight)
-        {
-            BoxList.ForEach(x => CommandBuilder.DrawBox(pageWidth, pageHeight, x));
-            return this;
-        }
-
-        /// <summary>
-        /// 构建条码
-        /// </summary>
-        /// <param name="pageWidth">页宽</param>
-        /// <param name="pageHeight">页高</param>
-        public ZicoxPrintClient BuildBarcode(int pageWidth, int pageHeight)
-        {
-            BarcodeList.ForEach(x => CommandBuilder.DrawBarcode(pageWidth, pageHeight, x));
-            return this;
-        }
-
-        /// <summary>
-        /// 构建二维码
-        /// </summary>
-        /// <param name="pageWidth">页宽</param>
-        /// <param name="pageHeight">页高</param>
-        public ZicoxPrintClient BuildQrCode(int pageWidth, int pageHeight)
-        {
-            QrCodeList.ForEach(x => CommandBuilder.DrawQrCode(pageWidth, pageHeight, x));
-            return this;
-        }
-
-        /// <summary>
-        /// 构建图片
-        /// </summary>
-        /// <param name="pageWidth">页宽</param>
-        /// <param name="pageHeight">页高</param>
-        public ZicoxPrintClient BuildBitmap(int pageWidth, int pageHeight)
-        {
-            BitmapList.ForEach(x => CommandBuilder.DrawBitmap(pageWidth, pageHeight, x));
+            var item = new DrawRawItem
+            {
+                Raw = raw,
+                Newline = true
+            };
+            Items.Add(item);
             return this;
         }
 
@@ -354,7 +306,14 @@ namespace Bing.BluetoothPrinter.Zicox
         /// </summary>
         public IBufferWriter Build()
         {
-            Writer.WriteLine($"! 0 200 200 {Height} 1");
+            // 是否全部原始命令
+            if (Items.All(x => x.MetadataType == MetadataType.Raw))
+            {
+                Items.ForEach(x => x.Build(Width, Height, CommandBuilder));
+                Writer.Write(RawWriter.GetBytes());
+                return Writer;
+            }
+            Writer.WriteLine($"! {Offset} 200 200 {Height} {Qty}");
             Writer.WriteLine($"PAGE-WIDTH {Width}");
             Items.ForEach(x => x.Build(Width, Height, CommandBuilder));
             Writer.Write(RawWriter.GetBytes());

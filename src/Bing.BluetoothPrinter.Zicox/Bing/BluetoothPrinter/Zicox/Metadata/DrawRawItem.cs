@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Bing.BluetoothPrinter.Core.Extensions;
 using Bing.BluetoothPrinter.Zicox.Internal;
 
 namespace Bing.BluetoothPrinter.Zicox.Metadata
@@ -8,6 +8,11 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
     /// </summary>
     internal class DrawRawItem : DrawItemBase
     {
+        /// <summary>
+        /// 元数据类型
+        /// </summary>
+        public override MetadataType MetadataType => MetadataType.Raw;
+
         /// <summary>
         /// 原始数据
         /// </summary>
@@ -24,9 +29,6 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
         /// <param name="pageWidth">页宽</param>
         /// <param name="pageHeight">页高</param>
         /// <param name="builder">命令构建器</param>
-        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder)
-        {
-            throw new NotImplementedException();
-        }
+        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder) => builder.DrawRaw(pageWidth,pageHeight,this);
     }
 }

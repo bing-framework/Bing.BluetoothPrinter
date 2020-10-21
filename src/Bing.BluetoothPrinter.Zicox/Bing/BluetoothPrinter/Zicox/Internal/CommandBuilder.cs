@@ -1,4 +1,11 @@
-﻿using Bing.BluetoothPrinter.Abstractions;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
+using Bing.BluetoothPrinter.Abstractions;
 using Bing.BluetoothPrinter.Core.Extensions;
 using Bing.BluetoothPrinter.Zicox.Metadata;
 
@@ -104,14 +111,123 @@ namespace Bing.BluetoothPrinter.Zicox.Internal
             Writer.WriteLine("ENDQR");
         }
 
+        /// <summary>
+        /// 打印图片
+        /// </summary>
+        /// <param name="pageWidth">页宽度</param>
+        /// <param name="pageHeight">页高度</param>
+        /// <param name="item">打印图片明细</param>
         public void DrawBitmap(int pageWidth, int pageHeight, DrawBitmapItem item)
         {
+            var bmp = item.Bitmap;
+            var x = item.X;
+            var y = item.Y;
+            var rotate = item.Rotate;
+            var w = bmp.Width;
+            var h = bmp.Height;
+            var byteCountW = (w + 7) / 8;
+            var outData = new byte[(byteCountW * h)];
+            var bmpData = GetBitmapData(bmp);
+            //for (var yy = 0; yy < h; yy++)
+            //{
+            //    for (int xx = 0; xx < w; xx++)
+            //    {
+            //        var c = bmpData[(yy * w) + xx];
+            //        if (((((((c >> 16) & 255) * 30) + (((c >> 8) & 255) * 59)) + ((c & 255) * 11)) + 50) / 100 < 128)
+            //        {
+            //            var i = (byteCountW * yy) + (xx / 8);
+            //            outData[i] = (byte)(outData[i] | (128 >> (xx % 8)));
+            //        }
+            //    }
+            //}
 
+            for (var i = 0; i < bmpData.Length; i++)
+            {
+                bmpData[i] ^= 0xFF;
+            }
+
+            var textHex = BitConverter.ToString(bmpData).Replace("-", string.Empty);
+
+            var cmd = "EG";
+            if (rotate)
+                cmd = "VEG";
+
+            var cmHeaderStr = $"{cmd} {byteCountW} {h} {x} {y}";
+            //var dataStr = "";
+            //foreach (var b in outData) 
+            //    dataStr = dataStr + ByteToString(b);
+            Writer.WriteLine($"{cmHeaderStr} {textHex}");
+        }
+
+        /// <summary>  
+        /// 获取单色位图数据(1bpp)，不含文件头、信息头、调色板三类数据。  
+        /// </summary>  
+        private static byte[] GetBitmapData(Bitmap srcBmp)
+        {
+            MemoryStream srcStream = new MemoryStream();
+            MemoryStream dstStream = new MemoryStream();
+            Bitmap dstBmp = null;
+            var rowRealBytesCount = srcBmp.Width % 8 > 0 ? srcBmp.Width / 8 + 1 : srcBmp.Width / 8;
+            var rowSize= (((srcBmp.Width) + 31) >> 5) << 2;
+            byte[] srcBuffer = null;
+            byte[] dstBuffer = null;
+            byte[] result = null;
+            try
+            {
+                srcStream = new MemoryStream();
+                srcBmp.Save(srcStream, ImageFormat.Bmp);
+                srcBuffer = srcStream.ToArray();
+                dstBmp = srcBmp.Clone(new Rectangle(0, 0, srcBmp.Width, srcBmp.Height), PixelFormat.Format1bppIndexed);
+                dstBmp.Save(dstStream, ImageFormat.Bmp);
+                dstBuffer = dstStream.ToArray();
+
+                int bfSize = BitConverter.ToInt32(dstBuffer, 2);
+                int bfOffBits = BitConverter.ToInt32(dstBuffer, 10);
+                int bitmapDataLength = bfSize - bfOffBits;
+                result = new byte[srcBmp.Height * rowRealBytesCount];
+
+                //读取时需要反向读取每行字节实现上下翻转的效果，打印机打印顺序需要这样读取。  
+                for (int i = 0; i < srcBmp.Height; i++)
+                {
+                    Array.Copy(dstBuffer, bfOffBits + (srcBmp.Height - 1 - i) * rowSize, result, i * rowRealBytesCount, rowRealBytesCount);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (srcStream != null)
+                {
+                    srcStream.Dispose();
+                    srcStream = null;
+                }
+                if (dstStream != null)
+                {
+                    dstStream.Dispose();
+                    dstStream = null;
+                }
+                if (srcBmp != null)
+                {
+                    srcBmp.Dispose();
+                    srcBmp = null;
+                }
+                if (dstBmp != null)
+                {
+                    dstBmp.Dispose();
+                    dstBmp = null;
+                }
+            }
+            return result;
         }
 
         public void DrawRaw(int pageWidth, int pageHeight, DrawRawItem item)
         {
-
+            if (item.Newline)
+                Writer.WriteLine(item.Raw);
+            else
+                Writer.Write(item.Raw);
         }
     }
 }
