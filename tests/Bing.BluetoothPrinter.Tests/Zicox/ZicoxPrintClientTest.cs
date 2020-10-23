@@ -1,12 +1,11 @@
 ﻿using System.Drawing;
 using Bing.BluetoothPrinter.Zicox;
-using Bing.BluetoothPrinter.Zicox.Extensions;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Bing.BluetoothPrinter.Tests.Zicox
 {
-    public class ZicoxPrintClientTest : TestBase
+    public partial class ZicoxPrintClientTest : TestBase
     {
         /// <summary>
         /// 客户端
@@ -22,7 +21,10 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
             Client = new ZicoxPrintClient();
         }
 
-        public void Build()
+        /// <summary>
+        /// 构建
+        /// </summary>
+        private void Build()
         {
             var result = Client.Build();
             Output.WriteLine("----------------------------- 调试命令 ---------------------------------------");
@@ -58,19 +60,6 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         }
 
         /// <summary>
-        /// 测试 - 绘制线条
-        /// </summary>
-        [Fact]
-        public void Test_DrawLine_1()
-        {
-            Client.SetPage(600, 210)
-                .DrawDashLineA(0, 0)
-                .DrawDashLineA(0, 50)
-                .DrawText(0, 100, "test", 1, 1, 0);
-            Build();
-        }
-
-        /// <summary>
         /// 测试 - 打印矩形
         /// </summary>
         [Fact]
@@ -90,7 +79,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         {
             Client.SetPage(400, 210)
                 .DrawBarcode1D("128", 150, 10, "HORIZ.", 1, 50, 0, 1)
-                .DrawText(210,60,"HORIZ.",16,0,0,false,false,false)
+                .DrawText(210, 60, "HORIZ.", 16, 0, 0, false, false, false)
                 .DrawBarcode1D("128", 10, 200, "VERT.", 1, 50, 90, 1)
                 .DrawText(60, 140, "VERT.", 16, 0, 90, false, false, false);
             Build();
@@ -129,7 +118,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         public void Test_DrawDashLine()
         {
             Client.SetPage(600, 200)
-                .DrawDashLine(0, 10,595, 5);
+                .DrawDashLine(0, 10, 595, 5);
             var result = Client.Build();
             Output.WriteLine(result.ToString());
             Output.WriteLine(result.ToHex());
@@ -162,7 +151,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
             //var bmp2 = new Bitmap(Image.FromFile(utopaLomPath));
             Client.SetPage(600, 400)
                 .DrawBitmap(bmp1, 0, 0, false);
-                //.DrawBitmap(bmp2, 0, 150, false);
+            //.DrawBitmap(bmp2, 0, 150, false);
             var result = Client.Build();
             Output.WriteLine(result.ToHex());
             Output.WriteLine(result.ToString());
@@ -239,7 +228,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
             var utopaPath = "D:\\utopa.jpg";
             var bmp1 = new Bitmap(Image.FromFile(utopaPath));
             Client
-                .SetPage(600,180)
+                .SetPage(600, 180)
                 .SetQty(3)
                 .WriteRawLine("TEXT 4 0 0 50 1")
                 .Count(1)
@@ -252,7 +241,7 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
                 .WriteRawLine("BARCODE 128 1 1 50 0 130 123456789")
                 .Count(-10)
                 .WriteRawLine("LEFT")
-                .DrawBitmap(bmp1,0,150,false);
+                .DrawBitmap(bmp1, 0, 150, false);
             var result = Client.Build();
             Output.WriteLine(result.ToHex());
             Output.WriteLine(result.ToString());
@@ -262,12 +251,62 @@ namespace Bing.BluetoothPrinter.Tests.Zicox
         [Fact]
         public void Test_WriteRaw_End()
         {
-            Client.WriteRawLine("! 0 200 200 240 1")
+            Client.WriteRawLine("! 0 200 200 210 1")
                 .WriteRawLine("PAGE-WIDTH 240")
                 .WriteRawLine("BOX 0 0 200 200 10")
                 .WriteRawLine("BOX 50 50 220 220 10")
                 //.WriteRawLine("END")
                 .WriteRawLine("FROM")
+                .WriteRawLine("PRINT");
+            Build();
+        }
+
+        [Fact]
+        public void Test_WriteRaw_MultiLine()
+        {
+            Client.WriteRawLine("! 0 200 200 210 1")
+                .MultiLine(47, "T", "4", 0, 10, 20, "1st line of text", "2nd line of text", ":", "Nth line of text")
+                .WriteRawLine("FROM")
+                .WriteRawLine("PRINT");
+            Build();
+        }
+
+        [Fact]
+        public void Test_WriteRaw_Concat()
+        {
+            Client.WriteRawLine("! 0 200 200 210 1")
+                .Concat(75, 75, ("4", 2, 5, "$"), ("4", 3, 0, "12"), ("4", 2, 5, "34"))
+                .WriteRawLine("FROM")
+                .WriteRawLine("PRINT");
+            Build();
+        }
+
+        [Fact]
+        public void Test_WriteRaw_BarcodeRss()
+        {
+            Client.WriteRawLine("! 0 200 200 300 1")
+                .Text("5", 0, 10, 40, "RSS14 Composite")
+                .BarcodeRss(10, 110, 2, 25, 3, 22, 5, "1234567890123", "1234567890")
+                .WriteRawLine("PRINT");
+            Build();
+        }
+
+        [Fact]
+        public void Test_WriteRaw_Pdf417()
+        {
+            Client.WriteRawLine("! 0 200 200 300 1")
+                .Text("5", 0, 10, 40, "RSS14 Composite")
+                .Pdf417(10, 20, 3, 12, 3, 2, "PDF Data", "ABCDE12345")
+                .WriteRawLine("PRINT");
+            Build();
+        }
+
+        [Fact]
+        public void Test_WriteRaw_Maxicode()
+        {
+            Client.WriteRawLine("! 0 200 200 600 1")
+                .WriteRawLine("JOURNAL")
+                .Maxicode(20, 20, ("CC", "12345"), ("MSG", "This is a MAXICODE low priority message."), ("SC", "12345"), ("POST", "02886"))
                 .WriteRawLine("PRINT");
             Build();
         }

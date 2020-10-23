@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Text;
 using Bing.BluetoothPrinter.Abstractions;
-using Bing.BluetoothPrinter.Zicox.Extensions;
 using Bing.BluetoothPrinter.Zicox.Internal;
 
 namespace Bing.BluetoothPrinter.Zicox

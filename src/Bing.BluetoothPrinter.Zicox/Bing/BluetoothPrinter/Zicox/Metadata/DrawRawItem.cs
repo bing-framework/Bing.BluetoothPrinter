@@ -1,5 +1,4 @@
-﻿using Bing.BluetoothPrinter.Core.Extensions;
-using Bing.BluetoothPrinter.Zicox.Internal;
+﻿using Bing.BluetoothPrinter.Zicox.Internal;
 
 namespace Bing.BluetoothPrinter.Zicox.Metadata
 {
@@ -29,6 +28,6 @@ namespace Bing.BluetoothPrinter.Zicox.Metadata
         /// <param name="pageWidth">页宽</param>
         /// <param name="pageHeight">页高</param>
         /// <param name="builder">命令构建器</param>
-        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder) => builder.DrawRaw(pageWidth,pageHeight,this);
+        public override void Build(int pageWidth, int pageHeight, CommandBuilder builder) => builder.DrawRaw(pageWidth, pageHeight, this);
     }
 }

@@ -47,12 +47,5 @@ namespace Bing.BluetoothPrinter.Zicox
         public static ZicoxPrintClient DrawBarcode(this ZicoxPrintClient client, int x, int y, string text, int lineWidth, int height, int rotate, int ratio) => client.DrawBarcode1D("128", x, y, text, lineWidth, height, rotate, ratio);
 
         #endregion
-
-        public static ZicoxPrintClient DrawDashLineA(this ZicoxPrintClient client, int x0, int y0)
-        {
-            client.WriteRawLine("PATTERN 102");
-            client.WriteRawLine($"LINE {x0} {y0} {client.Width} {y0} 40");
-            return client;
-        }
     }
 }

@@ -14,7 +14,7 @@ namespace Bing.BluetoothPrinter.Zicox
     /// <summary>
     /// 芝柯打印客户端
     /// </summary>
-    public class ZicoxPrintClient
+    public partial class ZicoxPrintClient
     {
         /// <summary>
         /// 字体信息列表
